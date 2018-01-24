@@ -2,7 +2,8 @@
 #define LEXER_H
 //---------------------------------------------------------------------------
 // сюда можно добавить дополнительные лексемы зарезервированных слов
-enum tokens { lcARG,
+enum tokens { 
+	lcARG,
     lcCHAR,
     lcINT,
     lcIF,
@@ -16,7 +17,8 @@ enum tokens { lcARG,
     lcFINISHED,
     lcEND };
 //---------------------------------------------------------------------------
-enum tok_types { lcDELIMITER,
+enum tok_types { 
+	lcDELIMITER,
     lcIDENTIFIER,
     lcNUMBER,
     lcKEYWORD,
