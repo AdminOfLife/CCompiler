@@ -4,7 +4,7 @@
 #include "debug.h"
 
 /* Global variables visible within this module only. */
-static int gbl_debug_level = DEBUG_TRACE;
+static int gbl_debug_level = DEBUG_TEST;
 
 MODULE_IDENT( "@(#)debug.c	10.7");
 

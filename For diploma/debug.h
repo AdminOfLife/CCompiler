@@ -3,17 +3,6 @@
 
 //#define DEBUG_BUILD #if defined(_DEBUG) || defined(__DEBUG__)
 
-#if defined(_DEBUG) || defined(__DEBUG__)
-#define debug_print printf
-#define HEADER header
-#define DEBUG_INIT() char header[256]; sprintf(header, "%-25.25s%-25s", "TOKEN", "TOKEN_TYPE"); printf("%s\n", HEADER)
-#define DEBUG_TOKEN() printf("%-25s%-25s\n", token, get_type_desc(token_type))
-#else
-#define debug_print
-#define DEBUG_TOKEN()
-#define DEBUG_INIT()
-#endif
-
 #define FCT_NAME        fct_name
 #define MOD_NAME        mod_name
 #define MODULE_IDENT(m) static const char *mod_name = m
@@ -36,6 +25,17 @@
 #define DEBUG_ALL       0       /* all debugging messages are displayed   */
 #define DEBUG_NONE      99      /* no debugging output requested          */
     
+#if defined(_DEBUG) || defined(__DEBUG__)
+#define debug_print printf
+#define HEADER header
+#define DEBUG_INIT() char header[256]; sprintf(header, "%-25.25s%-25s", "TOKEN", "TOKEN_TYPE"); printf("%s\n", HEADER)
+#define DEBUG_TOKEN() printf("%-25s%-25s\n", token, get_type_desc(token_type))
+#else
+#define debug_print
+#define DEBUG_TOKEN()
+#define DEBUG_INIT() gbl_set_debug_level(DEBUG_TEST);
+#endif
+
 #ifdef __cplusplus  
 extern "C" {  // only need to export C interface if  
 	// used by C++ source code  
