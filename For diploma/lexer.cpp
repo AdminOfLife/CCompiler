@@ -20,6 +20,7 @@ struct commands { // таблица зарезервированных слов
 	"int", lcINT,
 	"return", lcRETURN,
 	"switch", lcSWITCH,
+	"struct", lcSTRUCT,
 	"end", lcEND,
 	"", lcEND // конец таблицы
 };
@@ -77,58 +78,58 @@ int get_token(void)
 		if (strchr("!<>=", *prog)) { // возможно, это
 			// оператор сравнени¤
 			switch (*prog) {
-case '=':
-	if (*(prog + 1) == '=') {
-		prog++;
-		prog++;
-		*temp = EQ;
-		temp++;
-		*temp = EQ;
-		temp++;
-		*temp = '\0';
-	}
-	break;
-case '!':
-	if (*(prog + 1) == '=') {
-		prog++;
-		prog++;
-		*temp = NE;
-		temp++;
-		*temp = NE;
-		temp++;
-		*temp = '\0';
-	}
-	break;
-case '<':
-	if (*(prog + 1) == '=') {
-		prog++;
-		prog++;
-		*temp = LE;
-		temp++;
-		*temp = LE;
-	}
-	else {
-		prog++;
-		*temp = LT;
-	}
-	temp++;
-	*temp = '\0';
-	break;
-case '>':
-	if (*(prog + 1) == '=') {
-		prog++;
-		prog++;
-		*temp = GE;
-		temp++;
-		*temp = GE;
-	}
-	else {
-		prog++;
-		*temp = GT;
-	}
-	temp++;
-	*temp = '\0';
-	break;
+			case '=':
+				if (*(prog + 1) == '=') {
+					prog++;
+					prog++;
+					*temp = EQ;
+					temp++;
+					*temp = EQ;
+					temp++;
+					*temp = '\0';
+				}
+				break;
+			case '!':
+				if (*(prog + 1) == '=') {
+					prog++;
+					prog++;
+					*temp = NE;
+					temp++;
+					*temp = NE;
+					temp++;
+					*temp = '\0';
+				}
+				break;
+			case '<':
+				if (*(prog + 1) == '=') {
+					prog++;
+					prog++;
+					*temp = LE;
+					temp++;
+					*temp = LE;
+				}
+				else {
+					prog++;
+					*temp = LT;
+				}
+				temp++;
+				*temp = '\0';
+				break;
+			case '>':
+				if (*(prog + 1) == '=') {
+					prog++;
+					prog++;
+					*temp = GE;
+					temp++;
+					*temp = GE;
+				}
+				else {
+					prog++;
+					*temp = GT;
+				}
+				temp++;
+				*temp = '\0';
+				break;
 			}
 			if (*token)
 				return (token_type = lcDELIMITER);

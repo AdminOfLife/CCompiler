@@ -197,6 +197,7 @@ void interp_block(void)
         else // зарезервированное слово
             switch (tok) {
             case lcCHAR:
+			case lcSTRUCT:
             case lcINT: // объявление локальной переменной
                 putback();
                 decl_local();
@@ -263,7 +264,12 @@ void decl_global(void)
 void decl_local(void)
 {
     struct var_type i;
-
+	
+	if (token_type == lcSTRUCT)
+	{
+		find_eob();
+	}
+	
     get_token(); // определение типа
 
     i.v_type = tok;

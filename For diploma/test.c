@@ -10,7 +10,12 @@ char ch;
 int main()
 {
   int i, j;  /* локальные переменные */
-
+  /*
+  struct test
+  {
+	  int a;
+  };
+  */
   puts("Программа демонстрации Little C.");
 
   print_alpha();

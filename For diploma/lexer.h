@@ -6,6 +6,7 @@ enum tokens {
 	lcARG,
     lcCHAR,
     lcINT,
+	lcSTRUCT,
     lcIF,
     lcELSE,
     lcFOR,
