@@ -28,7 +28,7 @@
 //#define FUNC_CALLS      31//?
 //#define LOOP_NEST       31//?
 //#define FOR_NEST        31//?
-
+#define cto(a) a
 //---------------------------------------------------------------------------
 char* p_buf; //указывает на начало буфера программы
 jmp_buf e_buf; //содержит информацию для longjmp()
@@ -42,7 +42,7 @@ char token_type; //содержит тип лексемы prescan print call_puts get_token atom e
 char tok; //внутреннее представление лексемы prescan get_token exec_do exec_if get_params decl_local decl_global interp_block
 
 //--------------------------------
-char* cto(char*);
+//char* cto(char*);
 //--------------------------------
 //Библиотечные функции Little C
 int call_getche(void);
@@ -54,7 +54,7 @@ int getnum(void);
 int main(int argc, char* argv[])
 { // ;
 	setlocale(LC_ALL, "rus");
-#ifdef _DEBUG
+#if defined(_DEBUG) || defined(__DEBUG__)
 	char* filename = "test2.c";
 	argc = 2;
 	argv[1] = filename;

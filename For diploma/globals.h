@@ -3,6 +3,7 @@
 #include <setjmp.h>
 #include <stdlib.h>
 #include <string.h>
+#include "debug.h"
 //---------------------------------------------------------------------------
 extern char* p_buf; //указывает на начало буфера программы
 extern jmp_buf e_buf; //содержит информацию для longjmp()
@@ -15,3 +16,8 @@ extern char token[80]; //строковое представление лексемы main print call_puts pu
 extern char token_type; //содержит тип лексемы prescan print call_puts get_token atom eval_exp0 interp_block get_params
 extern char tok; //внутреннее представление лексемы prescan get_token exec_do exec_if get_params decl_local decl_global
 // interp_block
+#define cto(a) a
+
+#define TRUE
+#define FALSE
+

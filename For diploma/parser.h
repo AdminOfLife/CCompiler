@@ -7,7 +7,8 @@
 //констант можно расширить.
 //ВНИМАНИЕ: константа SYNTAX используется тогда, когда
 //интерпритатор не может квалифицировать ошибку.
-enum error_msg { SYNTAX,
+enum error_msg { 
+	SYNTAX,
     UNBAL_PARENS,
     NO_EXP,
     EQUALS_EXPECTED,
@@ -47,4 +48,4 @@ int internal_func(char* s);
 void sntx_err(int error);
 void atom(int* value);
 //--------------------------------
-char* cto(char*);
+//char* cto(char*);

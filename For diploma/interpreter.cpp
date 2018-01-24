@@ -8,6 +8,8 @@
 #include "parser.h"
 #include "interpreter.h"
 
+
+
 //---------------------------------------------------------------------------
 //интерпритатор
 int gvar_index; //индекс в таблице глобальных переменных main decl_global
@@ -27,6 +29,8 @@ struct var_type {
     int value;
 } global_vars[NUM_GLOBAL_VARS];
 struct var_type local_var_stack[NUM_LOCAL_VARS];
+
+MODULE_IDENT( "@(#)interpreter.cpp");
 
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
@@ -228,7 +232,7 @@ void interp_block(void)
 }
 //---------------------------------------------------------------------------
 // Возврат адреса точки входа данной функции. Возврат NULL, если не надена.
-char* find_func(char* name)
+char* find_func(const char* name)
 {
     register int i;
 
@@ -263,26 +267,53 @@ void decl_global(void)
 // Объявление локальной переменной.
 void decl_local(void)
 {
+	FCT_IDENT();
     struct var_type i;
 	
 	if (tok == lcSTRUCT)
 	{
-		find_eob();
+//		printf("token: %s\n", token);
+//		find_eob();
+//		printf("token: %s\n", token);
+//		get_token();
+//		printf("token: %s\n", token);
+		get_token();
+		if (get_token() == lcIDENTIFIER)
+		{
+			get_token();
+			if (*token == '{')
+			{
+				//find_eob();
+				decl_local();
+			}
+			else
+			{
+				sntx_err(PAREN_EXPECTED);
+			}
+		}
+		else
+		{
+			sntx_err(SYNTAX);
+		}
+		END_FCT();
 	}
+	else
+	{
+		get_token(); // определение типа
+
+	    i.v_type = tok;
+	    i.value = 0; // инициализация нулем
 	
-    get_token(); // определение типа
-
-    i.v_type = tok;
-    i.value = 0; // инициализация нулем
-
-    do { // обработка списка
-        get_token(); // определение типа пременной
-        strcpy(i.var_name, token);
-        local_push(i);
-        get_token();
-    } while (*token == ',');
-    if (*token != ';')
-        sntx_err(SEMI_EXPECTED);
+	    do { // обработка списка
+	        get_token(); // определение типа пременной
+	        strcpy(i.var_name, token);
+	        local_push(i);
+	        get_token();
+	    } while (*token == ',');
+	    if (*token != ';')
+	        sntx_err(SEMI_EXPECTED);
+	    END_FCT();	
+	}   
 }
 //---------------------------------------------------------------------------
 // Вызов функции.
@@ -537,6 +568,7 @@ void exec_do(void)
 // Поиск конца блока.
 void find_eob(void)
 {
+	FCT_IDENT();
     int brace;
 
     get_token();
@@ -548,6 +580,7 @@ void find_eob(void)
         else if (*token == '}')
             brace--;
     } while (brace);
+    END_FCT();
 }
 //---------------------------------------------------------------------------
 // Выполнение цикла for.

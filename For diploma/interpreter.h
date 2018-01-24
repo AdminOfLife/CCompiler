@@ -14,7 +14,7 @@ int interpreter_init(char* fname);
 int load_program(char* p, char* fname);
 void prescan(void);
 void interp_block(void);
-char* find_func(char* name);
+char* find_func(const char* name);
 void decl_global(void);
 void decl_local(void);
 void call(void);

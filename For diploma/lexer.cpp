@@ -1,5 +1,6 @@
 //---------------------------------------------------------------------------
 #include <ctype.h>
+#include <stdio.h>
 //---------------------------------------------------------------------------
 #include "globals.h"
 #include "lexer.h"
@@ -24,6 +25,33 @@ struct commands { // таблица зарезервированных слов
 	"end", lcEND,
 	"", lcEND // конец таблицы
 };
+
+#define DESC(type) {#type, type}
+struct token_type_desc
+{
+	char *desc;
+	tok_types type;
+}desc[] = {
+	DESC(lcDELIMITER),
+	DESC(lcIDENTIFIER),
+	DESC(lcNUMBER),
+	DESC(lcKEYWORD),
+	DESC(lcTEMP),
+	DESC(lcSTRING),
+	DESC(lcBLOCK)
+};
+//---------------------------------------------------------------------------
+char *get_type_desc(int token_type)
+{
+	for (int i = 0; i < sizeof(desc) / sizeof(token_type); i++)
+	{
+		if (desc[i].type == token_type)
+		{
+			return desc[i].desc;
+		}
+	}
+	return NULL;
+}
 //---------------------------------------------------------------------------
 // —читывание лексемы из входного потока.
 int get_token(void)
@@ -52,6 +80,7 @@ int get_token(void)
 	if (*prog == '\0') { // конец файла
 		*token = '\0';
 		tok = lcFINISHED;
+		DEBUG_TOKEN();
 		return (token_type = lcDELIMITER);
 	}
 
@@ -60,6 +89,7 @@ int get_token(void)
 		temp++;
 		*temp = '\0';
 		prog++;
+		DEBUG_TOKEN();
 		return (token_type = lcBLOCK);
 	}
 
@@ -132,7 +162,8 @@ int get_token(void)
 				break;
 			}
 			if (*token)
-				return (token_type = lcDELIMITER);
+			DEBUG_TOKEN();
+			return (token_type = lcDELIMITER);
 		}
 
 		if (strchr("+-*^/%=;(),'", *prog)) { // разделитель
@@ -140,6 +171,7 @@ int get_token(void)
 			prog++; // продвижение на следующую позицию
 			temp++;
 			*temp = '\0';
+			DEBUG_TOKEN();
 			return (token_type = lcDELIMITER);
 		}
 
@@ -151,6 +183,7 @@ int get_token(void)
 				sntx_err(SYNTAX);
 			prog++;
 			*temp = '\0';
+			DEBUG_TOKEN();
 			return (token_type = lcSTRING);
 		}
 
@@ -158,7 +191,8 @@ int get_token(void)
 			while (!isdelim(*prog))
 				*temp++ = *prog++;
 			*temp = '\0';
-			return (token_type = lcNUMBER);
+			DEBUG_TOKEN();
+		return (token_type = lcNUMBER);
 		}
 
 		if (isalpha(*prog)) { // переменна¤ или оператор
@@ -177,8 +211,10 @@ int get_token(void)
 			else
 				token_type = lcIDENTIFIER;
 		}
+		DEBUG_TOKEN();
 		return token_type;
 }
+
 //---------------------------------------------------------------------------
 // ¬озврат лексемы во входной поток.
 void putback(void)
