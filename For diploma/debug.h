@@ -5,7 +5,9 @@
 
 #if defined(_DEBUG) || defined(__DEBUG__)
 #define debug_print printf
-#define DEBUG_TOKEN() printf("cur_tok is: %s\ttoken_type: %s\n", token, get_type_desc(token_type))
+#define HEADER header
+#define DEBUG_INIT() char header[256]; sprintf(header, "%-25.25s%-25s", "TOKEN", "TOKEN_TYPE"); printf("%s\n", HEADER)
+#define DEBUG_TOKEN() printf("%-25s%-25s\n", token, get_type_desc(token_type))
 #else
 #define debug_print
 #endif
@@ -36,7 +38,7 @@
 int   gbl_set_debug_level(int debuglevel);
 int   gbl_get_debug_level(void);
 int   gbl_set_debug_via_env(void);
-void  gbl_debug_print(int debuglevel, char *fmt_str, ...);
+void  gbl_debug_print(int debuglevel, const char *fmt_str, ...);
 void  gbl_debug_trace( const char *str );
 int   xprintf_generic(int debuglevel, unsigned char *buf, int len, int type);
 int   xprintf(unsigned char *buf, int len);

@@ -10,3 +10,5 @@ UpgradeLog.htm
 CCompiler.opensdf
 CCompiler.sdf
 obj/
+bin/
+For diploma/test2.c

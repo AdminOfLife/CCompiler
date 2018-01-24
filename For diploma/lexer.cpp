@@ -22,6 +22,7 @@ struct commands { // таблица зарезервированных слов
 	"return", lcRETURN,
 	"switch", lcSWITCH,
 	"struct", lcSTRUCT,
+	/*typedef", lcTYPEDEF,*/
 	"end", lcEND,
 	"", lcEND // конец таблицы
 };
@@ -41,6 +42,8 @@ struct token_type_desc
 	DESC(lcBLOCK)
 };
 //---------------------------------------------------------------------------
+char header[256];
+//---------------------------------------------------------------------------
 char *get_type_desc(int token_type)
 {
 	for (int i = 0; i < sizeof(desc) / sizeof(token_type); i++)
@@ -56,7 +59,7 @@ char *get_type_desc(int token_type)
 // —читывание лексемы из входного потока.
 int get_token(void)
 {
-
+	
 	register char* temp;
 
 	token_type = 0;
@@ -64,7 +67,6 @@ int get_token(void)
 
 	temp = token;
 	*temp = '\0';
-
 	// пропуск пробелов, символов табул¤ции и пустой строки
 	while (iswhite(*prog) && *prog)
 		++prog;

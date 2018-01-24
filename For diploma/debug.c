@@ -9,7 +9,7 @@ static int gbl_debug_level = DEBUG_TRACE;
 MODULE_IDENT( "@(#)debug.c	10.7");
 
 void
-gbl_debug_print( int debuglevel, char *fmt_str, ... )
+gbl_debug_print( int debuglevel, const char *fmt_str, ... )
 {
 	va_list ap;
 
