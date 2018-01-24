@@ -31,18 +31,24 @@
 /* The following two macros are ONLY for use with gbl_set_debug_level(). */
 #define DEBUG_ALL       0       /* all debugging messages are displayed   */
 #define DEBUG_NONE      99      /* no debugging output requested          */
-                                        
+    
+#ifdef __cplusplus  
+extern "C" {  // only need to export C interface if  
+	// used by C++ source code  
+#endif  
 /* Function prototypes */
 int   gbl_set_debug_level(int debuglevel);
 int   gbl_get_debug_level(void);
 int   gbl_set_debug_via_env(void);
-void  gbl_debug_print(int debuglevel, char *fmt_str, ...);
+void  gbl_debug_print(int debuglevel, const char *fmt_str, ...);
 void  gbl_debug_trace( const char *str );
 int   xprintf_generic(int debuglevel, unsigned char *buf, int len, int type);
 int   xprintf(unsigned char *buf, int len);
 int   xprintf_safe( unsigned char *buf, int len );
 int   xprintf_ascii(int debuglevel, unsigned char *buf, int len);
 int   dump_buffer(int debug_level, unsigned char *buf, int len, int mode);
-
+#ifdef __cplusplus  
+}
+#endif  
 #endif /* IFS_DEBUG_INC */
 

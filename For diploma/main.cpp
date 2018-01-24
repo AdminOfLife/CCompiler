@@ -68,6 +68,6 @@ int main(int argc, char* argv[])
 
 	interpreter_init(argv[1]);
 	call(); // начало интерпритации main()
-	//getch();
+	getch();
 	return 0;
 }
