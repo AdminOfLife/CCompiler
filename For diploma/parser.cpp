@@ -30,27 +30,28 @@ struct intern_func_type { //внутреняя таблица функций
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 // Точка входа в синтаксический анализатор выражений.
-void eval_exp(int* value)
+int eval_exp()
 {
+	int value;
     get_token();
     if (!*token) {
         sntx_err(NO_EXP);
-        return;
     }
     if (*token == ';') {
-        *value = 0; // пустое выражение
-        return;
+        return 0; // пустое выражение
     }
-    eval_exp0(value);
+    value = eval_exp0();
     putback(); // возврат последней лексемы во входной поток
+	return value;
 }
 //---------------------------------------------------------------------------
 //Обработка выражения в присваивании
-void eval_exp0(int* value)
+int eval_exp0()
 {
     char temp[ID_LEN]; // содержит имя переменной,
     // которой присваивается значение
     register int temp_tok;
+	int value;
 
     if (token_type == lcIDENTIFIER) {
         if (is_var(token)) { // если эта переменная,
@@ -60,9 +61,9 @@ void eval_exp0(int* value)
             get_token();
             if (*token == '=') { // это присваивание
                 get_token();
-                eval_exp0(value); // вычислить присваемое значение
-                assign_var(temp, *value); // присвоить значение
-                return;
+				value = eval_exp0(); // вычислить присваемое значение
+                assign_var(temp, value); // присвоить значение
+                return value;
             }
             else { // не присваивание
                 putback(); // востановление лексемы
@@ -71,97 +72,104 @@ void eval_exp0(int* value)
             }
         }
     }
-    eval_exp1(value);
+    return eval_exp1();
 }
 //---------------------------------------------------------------------------
 // Обработка операций сравнения.
-void eval_exp1(int* value)
+int eval_exp1()
 {
+	int value;
     int partial_value;
     register char op;
     char relops[7] = {
         LT, LE, GT, GE, EQ, NE, 0
     };
 
-    eval_exp2(value);
+    value = eval_exp2();
     op = *token;
     if (strchr(relops, op)) {
         get_token();
-        eval_exp2(&partial_value);
+		partial_value = eval_exp2();
         switch (op) { // вычисление результата операции сравнения
         case LT:
-            *value = *value < partial_value;
+            value = value < partial_value;
             break;
         case LE:
-            *value = *value <= partial_value;
+			value = value <= partial_value;
             break;
         case GT:
-            *value = *value > partial_value;
+			value = value > partial_value;
             break;
         case GE:
-            *value = *value >= partial_value;
+			value = value >= partial_value;
             break;
         case EQ:
-            *value = *value == partial_value;
+			value = value == partial_value;
             break;
         case NE:
-            *value = *value != partial_value;
+			value = value != partial_value;
             break;
         }
     }
+	return value;
 }
 //---------------------------------------------------------------------------
 //  Суммирование или вычисление двух термов.
-void eval_exp2(int* value)
+int eval_exp2()
 {
+	int value;
     register char op;
     int partial_value;
 
-    eval_exp3(value);
+    value = eval_exp3();
     while ((op = *token) == '+' || op == '-') {
         get_token();
-        eval_exp3(&partial_value);
+		partial_value = eval_exp3();
         switch (op) { // суммирование или вычитание
         case '-':
-            *value = *value - partial_value;
+			value = value - partial_value;
             break;
         case '+':
-            *value = *value + partial_value;
+			value = value + partial_value;
             break;
         }
     }
+	return value;
 }
 //---------------------------------------------------------------------------
 // Умножение или деление двух множителей.
-void eval_exp3(int* value)
+int eval_exp3()
 {
+	int value;
     register char op;
     int partial_value, t;
 
-    eval_exp4(value);
+	value = eval_exp4();
     while ((op = *token) == '*' || op == '/' || op == '%') {
         get_token();
-        eval_exp4(&partial_value);
+		partial_value = eval_exp4();
         switch (op) { // умножение, деление или деление целых
         case '*':
-            *value = *value * partial_value;
+			value = value * partial_value;
             break;
         case '/':
             if (partial_value == 0)
                 sntx_err(DIV_BY_ZERO);
-            *value = (*value) / partial_value;
+			value = (value) / partial_value;
             break;
         case '%':
-            t = (*value) / partial_value;
-            *value = *value - (t * partial_value);
+            t = (value) / partial_value;
+			value = value - (t * partial_value);
             break;
         }
     }
+	return value;
 }
 //---------------------------------------------------------------------------
 // Унарный + или -.
-void eval_exp4(int* value)
+int eval_exp4()
 {
+	int value;
     register char op;
 
     op = '\0';
@@ -169,62 +177,66 @@ void eval_exp4(int* value)
         op = *token;
         get_token();
     }
-    eval_exp5(value);
+	value = eval_exp5();
     if (op)
         if (op == '-')
-            *value = -(*value);
+            value = -(value);
+	return value;
 }
 //---------------------------------------------------------------------------
 // Обработка выражения в скобках.
-void eval_exp5(int* value)
+int eval_exp5()
 {
+	int value;
     if ((*token == '(')) {
         get_token();
-        eval_exp0(value); // вычисление подвыражения
+        value = eval_exp0(); // вычисление подвыражения
         if (*token != ')')
             sntx_err(PAREN_EXPECTED);
         get_token();
+		return value;
     }
     else
-        atom(value);
+        return atom();
 }
 //---------------------------------------------------------------------------
 // Получение значения числа, переменной или функции.
-void atom(int* value)
+int atom()
 {
+	int value;
     int i;
 
     switch (token_type) {
     case lcIDENTIFIER:
         i = internal_func(token);
         if (i != -1) { // вызов функции из "стандартной билиотеки"
-            *value = (*intern_func[i].p)();
+            value = (*intern_func[i].p)();
         }
         else if (find_func(token)) { // вызов функции,
             // определенной пользователем
             call();
-            *value = ret_value;
+            value = ret_value;
         }
         else
-            *value = find_var(token); // получение значения переменной
+            value = find_var(token); // получение значения переменной
         get_token();
-        return;
+		return value;
     case lcNUMBER: // числовая константа
-        *value = atoi(token);
+        value = atoi(token);
         get_token();
-        return;
+		return value;
     case lcDELIMITER: // это символьная константа?
         if (*token == '\'') {
-            *value = *prog;
+            value = *prog;
             prog++;
             if (*prog != '\'')
                 sntx_err(QUOTE_EXPECTED);
             prog++;
             get_token();
-            return;
+            return value;
         }
         if (*token == ')')
-            return; // обработка пустого выражения
+            return 0; // обработка пустого выражения
         else
             sntx_err(SYNTAX); // синтаксическая ошибка
     default:
@@ -332,9 +344,8 @@ int call_getche()
 int call_putch()
 {
     int value;
-
-    eval_exp(&value);
-    printf("%c", value);
+ 
+	printf("%c", value = eval_exp());
     return value;
 }
 //---------------------------------------------------------------------------
@@ -380,7 +391,6 @@ int getnum(void)
 // Встроенная функция консольного вывода.
 int print(void)
 {
-    int i;
 
     get_token();
     if (*token != '(')
@@ -394,8 +404,7 @@ int print(void)
     }
     else { // вывод числа
         putback();
-        eval_exp(&i);
-        printf("%d ", i);
+		printf("%d ", eval_exp());
     }
 
     get_token();

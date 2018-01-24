@@ -9,26 +9,57 @@ char ch;
 
 int main()
 {
-	int i, j;  /* локальные переменные */
-
-	struct test
-	{
+  int i, j;  /* локальные переменные */
+  /*
+  struct test
+  {
 	  int a;
-	};
+  };
+  */
+  puts("Программа демонстрации Little C.");
 
-	{
-		{
-			{
-				puts("Программа демонстрации Little C.");
-				puts("Введите число");
-				getnum();
-			}
-		}
-	}
-	/*
-	i = get_num();
-	puts("Пока");
-	i = get_num();
-	*/
+  print_alpha();
+
+  do {
+    puts("Введите число (0, если выход): ");
+    i = getnum();
+    if(i < 0 ) {
+      puts("числа должны быть положительными, введите еще");
+    }
+    else {
+      for(j = 0; j < i; j=j+1) {
+        print(j);
+        print("сумма равна");
+        print(sum(j));
+        puts("");
+      }
+    }
+  } while(i!=0);
+
+  return 0;
+}
+
+/* Сумма чисел от 0 до введенного числа. */
+int sum(int num)
+{
+  int running_sum;
+
+  running_sum = 0;
+
+  while(num) {
+    running_sum = running_sum + num;
+    num = num - 1;
+  }
+  return running_sum;
+}
+
+/* Вывод на экран английского алфавита. */
+int print_alpha()
+{
+  for(ch = 'A'; ch<='Z'; ch = ch + 1) {
+    putch(ch);
+  }
+  puts("");
+
   return 0;
 }

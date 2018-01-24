@@ -27,7 +27,7 @@ struct var_type {
     char var_name[32];
     int v_type;
     union {
-		double value;
+		int value;
 	};
 } global_vars[NUM_GLOBAL_VARS];
 struct var_type local_var_stack[NUM_LOCAL_VARS];
@@ -191,7 +191,7 @@ void interp_block(void)
             // обрабатывается выражение.
             putback(); // возврат лексемыво входной поток
             //  для дальнейшей обработки функцией eval_exp()
-            eval_exp(&value); // обработка выражения
+			value = eval_exp(); // обработка выражения
             if (*token != ';')
                 sntx_err(SEMI_EXPECTED);
         }
@@ -348,7 +348,7 @@ void call(void)
 // Заталкивание аргументов функций в стек локальных переменных.
 void get_args(void)
 {
-    int value, count, temp[NUM_PARAMS];
+    int count, temp[NUM_PARAMS];
     struct var_type i;
 
     count = 0;
@@ -358,8 +358,7 @@ void get_args(void)
 
     // обработка списка значений
     do {
-        eval_exp(&value);
-        temp[count] = value; // временное запоминание
+		temp[count] = eval_exp(); // временное запоминание
         get_token();
         count++;
     } while (*token == ',');
@@ -409,9 +408,8 @@ void func_ret(void)
 
     value = 0;
     // получение возвращаемого значения, если оно есть
-    eval_exp(&value);
-
-    ret_value = value;
+    
+	ret_value = eval_exp();
 }
 //---------------------------------------------------------------------------
 // Затолкнуть локальную переменную.
@@ -508,9 +506,9 @@ void exec_if(void)
 {
     int cond;
 
-    eval_exp(&cond); // вычисление if-выражения
+    // вычисление if-выражения
 
-    if (cond) { // истина - интерпретация if-предложения
+	if (eval_exp()) { // истина - интерпретация if-предложения
         interp_block();
     }
     else { // в противном случае пропуск if-предложения
@@ -536,8 +534,7 @@ void exec_while(void)
     putback();
     temp = prog; // запоминание адреса начала цикла while
     get_token();
-    eval_exp(&cond); // вычисление управляющего выражения
-    if (cond)
+   	if (eval_exp()) // вычисление управляющего выражения
         interp_block(); // если оно истинно, то выполнить
     // интерпритацию
     else { // в противном случае цикл пропускается
@@ -561,8 +558,7 @@ void exec_do(void)
     get_token();
     if (tok != lcWHILE)
         sntx_err(WHILE_EXPECTED);
-    eval_exp(&cond); // проверка условия цикла
-    if (cond)
+	if (eval_exp()) // проверка условия цикла
         prog = temp; // если условие истинно,
     //то цикл выполняется, в противном случае происходит
     //выход из цикла
@@ -594,13 +590,13 @@ void exec_for(void)
     int brace;
 
     get_token();
-    eval_exp(&cond); // инициализирующее выражение
+	cond = eval_exp(); // инициализирующее выражение
     if (*token != ';')
         sntx_err(SEMI_EXPECTED);
     prog++; // пропуск ; */
     temp = prog;
     for (;;) {
-        eval_exp(&cond); // проверка условия
+		cond = eval_exp(); // проверка условия
         if (*token != ';')
             sntx_err(SEMI_EXPECTED);
         prog++; // пропуск ;
@@ -624,7 +620,7 @@ void exec_for(void)
             return;
         }
         prog = temp2;
-        eval_exp(&cond); // вполнение инкремента
+		cond = eval_exp(); // вполнение инкремента
         prog = temp; // возврат в начало цикла
     }
 }

@@ -37,15 +37,15 @@ int getnum(void);
 
 //--------------------------------
 //Функции анализатора
-void eval_exp(int* value);
-void eval_exp0(int* value);
-void eval_exp1(int* value);
-void eval_exp2(int* value);
-void eval_exp3(int* value);
-void eval_exp4(int* value);
-void eval_exp5(int* value);
+int eval_exp();
+int eval_exp0();
+int eval_exp1();
+int eval_exp2();
+int eval_exp3();
+int eval_exp4();
+int eval_exp5();
 int internal_func(char* s);
 void sntx_err(int error);
-void atom(int* value);
+int atom();
 //--------------------------------
 //char* cto(char*);

@@ -164,8 +164,11 @@ int get_token(void)
 				break;
 			}
 			if (*token)
-			DEBUG_TOKEN();
-			return (token_type = lcDELIMITER);
+			{
+				DEBUG_TOKEN();
+				return (token_type = lcDELIMITER);
+			}			
+			
 		}
 
 		if (strchr("+-*^/%=;(),'", *prog)) { // разделитель
