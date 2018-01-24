@@ -10,6 +10,8 @@
 #define DEBUG_TOKEN() printf("%-25s%-25s\n", token, get_type_desc(token_type))
 #else
 #define debug_print
+#define DEBUG_TOKEN()
+#define DEBUG_INIT()
 #endif
 
 #define FCT_NAME        fct_name

@@ -6,9 +6,9 @@ CC       = gcc.exe -D__DEBUG__
 WINDRES  = windres.exe
 OBJ      = obj/interpreter.o obj/lexer.o obj/main.o obj/parser.o obj/debug.o
 LINKOBJ  = obj/interpreter.o obj/lexer.o obj/main.o obj/parser.o obj/debug.o
-LIBS     = -L"C:/Program Files (x86)/Dev-Cpp/MinGW64/lib32" -L"C:/Program Files (x86)/Dev-Cpp/MinGW64/x86_64-w64-mingw32/lib32" -static-libgcc -m32 -g3
-INCS     = -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/include" -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/x86_64-w64-mingw32/include" -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/lib/gcc/x86_64-w64-mingw32/4.9.2/include"
-CXXINCS  = -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/include" -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/x86_64-w64-mingw32/include" -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/lib/gcc/x86_64-w64-mingw32/4.9.2/include" -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/lib/gcc/x86_64-w64-mingw32/4.9.2/include/c++"
+LIBS     = -L"F:/Programs/Dev-Cpp/MinGW64/lib32" -L"F:/Programs/Dev-Cpp/MinGW64/x86_64-w64-mingw32/lib32" -static-libgcc -m32 -g3
+INCS     = -I"F:/Programs/Dev-Cpp/MinGW64/include" -I"F:/Programs/Dev-Cpp/MinGW64/x86_64-w64-mingw32/include" -I"F:/Programs/Dev-Cpp/MinGW64/lib/gcc/x86_64-w64-mingw32/4.9.2/include"
+CXXINCS  = -I"F:/Programs/Dev-Cpp/MinGW64/include" -I"F:/Programs/Dev-Cpp/MinGW64/x86_64-w64-mingw32/include" -I"F:/Programs/Dev-Cpp/MinGW64/lib/gcc/x86_64-w64-mingw32/4.9.2/include" -I"F:/Programs/Dev-Cpp/MinGW64/lib/gcc/x86_64-w64-mingw32/4.9.2/include/c++"
 BIN      = bin/CCompiler.exe
 CXXFLAGS = $(CXXINCS) -m32 -g3
 CFLAGS   = $(INCS) -m32 -g3
@@ -36,5 +36,5 @@ obj/main.o: For\ diploma/main.cpp
 obj/parser.o: For\ diploma/parser.cpp
 	$(CPP) -c "For diploma/parser.cpp" -o obj/parser.o $(CXXFLAGS)
 
-obj/debug.o: For\ diploma/debug.c
-	$(CPP) -c "For diploma/debug.c" -o obj/debug.o $(CXXFLAGS)
+obj/debug.o: For\ diploma/debug.cpp
+	$(CPP) -c "For diploma/debug.cpp" -o obj/debug.o $(CXXFLAGS)

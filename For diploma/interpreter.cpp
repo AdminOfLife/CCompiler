@@ -117,6 +117,7 @@ int load_program(char* p, char* fname)
 //Найти адреса всех функций в программе и запомнить глобальные переменные.
 void prescan(void)
 {
+	FCT_IDENT();
     char *p, *tp;
     char temp[32];
     int datatype;
@@ -167,6 +168,7 @@ void prescan(void)
             brace++;
     } while (tok != lcFINISHED);
     prog = p;
+	END_FCT();
 }
 //---------------------------------------------------------------------------
 // Интерпритация одного оператора или блока. Когда interp_block() возвращает
@@ -248,6 +250,7 @@ char* find_func(const char* name)
 // Объявление глобальной переменной.
 void decl_global(void)
 {
+	FCT_IDENT();
     int vartype;
 
     get_token(); // определение типа
@@ -264,6 +267,7 @@ void decl_global(void)
     } while (*token == ',');
     if (*token != ';')
         sntx_err(SEMI_EXPECTED);
+	END_FCT();
 }
 //---------------------------------------------------------------------------
 // Объявление локальной переменной.
@@ -316,6 +320,7 @@ void decl_local(void)
 // Вызов функции.
 void call(void)
 {
+	FCT_IDENT();
     char *loc, *temp;
     int lvartemp;
 
@@ -337,6 +342,7 @@ void call(void)
         lvartos = func_pop(); // восстановление стека
         // локальных переменных
     }
+	END_FCT();
 }
 //---------------------------------------------------------------------------
 // Заталкивание аргументов функций в стек локальных переменных.
