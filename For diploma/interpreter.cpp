@@ -26,7 +26,9 @@ struct func_type { //Это стек вызова функции.
 struct var_type {
     char var_name[32];
     int v_type;
-    int value;
+    union {
+		double value;
+	};
 } global_vars[NUM_GLOBAL_VARS];
 struct var_type local_var_stack[NUM_LOCAL_VARS];
 
@@ -272,19 +274,14 @@ void decl_local(void)
 	
 	if (tok == lcSTRUCT)
 	{
-//		printf("token: %s\n", token);
-//		find_eob();
-//		printf("token: %s\n", token);
-//		get_token();
-//		printf("token: %s\n", token);
 		get_token();
 		if (get_token() == lcIDENTIFIER)
 		{
 			get_token();
 			if (*token == '{')
 			{
-				//find_eob();
-				decl_local();
+				find_eob();
+				//decl_local();
 			}
 			else
 			{
