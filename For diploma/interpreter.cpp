@@ -265,7 +265,7 @@ void decl_local(void)
 {
     struct var_type i;
 	
-	if (token_type == lcSTRUCT)
+	if (tok == lcSTRUCT)
 	{
 		find_eob();
 	}

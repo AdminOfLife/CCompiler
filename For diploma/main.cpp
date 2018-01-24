@@ -55,7 +55,7 @@ int main(int argc, char* argv[])
 { // ;
 	setlocale(LC_ALL, "rus");
 #ifdef _DEBUG
-	char* filename = "test.c";
+	char* filename = "test2.c";
 	argc = 2;
 	argv[1] = filename;
 #endif // _DEBUG
