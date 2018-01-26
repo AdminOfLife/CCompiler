@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
     </Filter>
+    <Filter Include="Source Files\tools">
+      <UniqueIdentifier>{88ce8dec-cb8a-40fa-a9f5-8efb8b59a6d3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="interpreter.cpp">
@@ -30,6 +33,9 @@
     <ClCompile Include="debug.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="iniparser.cpp">
+      <Filter>Source Files\tools</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="globals.h">
@@ -46,6 +52,9 @@
     </ClInclude>
     <ClInclude Include="debug.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="iniparser.h">
+      <Filter>Source Files\tools</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

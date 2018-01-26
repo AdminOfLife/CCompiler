@@ -26,6 +26,7 @@
 #define DEBUG_NONE      99      /* no debugging output requested          */
     
 #if defined(_DEBUG) || defined(__DEBUG__)
+#define DEBUG_BUILD
 #define debug_print printf
 #define HEADER header
 #define DEBUG_INIT() char header[256]; sprintf(header, "%-25.25s%-25s", "TOKEN", "TOKEN_TYPE"); printf("%s\n", HEADER)

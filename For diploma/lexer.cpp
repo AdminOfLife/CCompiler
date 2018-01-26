@@ -41,8 +41,11 @@ struct token_type_desc
 	DESC(lcSTRING),
 	DESC(lcBLOCK)
 };
+
+struct define_tab def_tab[255];
 //---------------------------------------------------------------------------
 char header[256];
+int define_tab_indx;
 //---------------------------------------------------------------------------
 char *get_type_desc(int token_type)
 {
@@ -54,6 +57,25 @@ char *get_type_desc(int token_type)
 		}
 	}
 	return NULL;
+}
+struct define_tab *in_deftab(char *token)
+{
+	register int i;
+	char* p;
+
+	// преобразование в нижний регистр
+	p = token;
+	while (*p) {
+		*p = tolower(*p);
+		p++;
+	}
+
+	// есть ли лексемы в таблице?
+	for (i = 0; *def_tab[i].name; i++) {
+		if (!strcmp(def_tab[i].name, token))
+			return &(def_tab[i]);
+	}
+	return 0; // незнакомый оператор
 }
 //---------------------------------------------------------------------------
 // —читывание лексемы из входного потока.
@@ -67,6 +89,12 @@ int get_token(void)
 
 	temp = token;
 	*temp = '\0';
+	if (*prog == '\0') { // конец файла
+		*token = '\0';
+		tok = lcFINISHED;
+		DEBUG_TOKEN();
+		return (token_type = lcDELIMITER);
+	}
 	// пропуск пробелов, символов табул¤ции и пустой строки
 	while (iswhite(*prog) && *prog)
 		++prog;
@@ -79,12 +107,7 @@ int get_token(void)
 			++prog;
 	}
 
-	if (*prog == '\0') { // конец файла
-		*token = '\0';
-		tok = lcFINISHED;
-		DEBUG_TOKEN();
-		return (token_type = lcDELIMITER);
-	}
+
 
 	if (strchr("{}", *prog)) { // ограничение блока
 		*temp = *prog;
@@ -106,118 +129,125 @@ int get_token(void)
 			} while (*prog != '/');
 			prog++;
 		}
+	if (*prog == '#')
+	{
+		*temp++ = *prog++;
+		*temp = 0;
+		DEBUG_TOKEN();
+		return (token_type = lcDELIMITER);
+	}
 
-		if (strchr("!<>=", *prog)) { // возможно, это
-			// оператор сравнени¤
-			switch (*prog) {
-			case '=':
-				if (*(prog + 1) == '=') {
-					prog++;
-					prog++;
-					*temp = EQ;
-					temp++;
-					*temp = EQ;
-					temp++;
-					*temp = '\0';
-				}
-				break;
-			case '!':
-				if (*(prog + 1) == '=') {
-					prog++;
-					prog++;
-					*temp = NE;
-					temp++;
-					*temp = NE;
-					temp++;
-					*temp = '\0';
-				}
-				break;
-			case '<':
-				if (*(prog + 1) == '=') {
-					prog++;
-					prog++;
-					*temp = LE;
-					temp++;
-					*temp = LE;
-				}
-				else {
-					prog++;
-					*temp = LT;
-				}
+	if (strchr("!<>=", *prog)) { // возможно, это
+		// оператор сравнени¤
+		switch (*prog) {
+		case '=':
+			if (*(prog + 1) == '=') {
+				prog++;
+				prog++;
+				*temp = EQ;
+				temp++;
+				*temp = EQ;
 				temp++;
 				*temp = '\0';
-				break;
-			case '>':
-				if (*(prog + 1) == '=') {
-					prog++;
-					prog++;
-					*temp = GE;
-					temp++;
-					*temp = GE;
-				}
-				else {
-					prog++;
-					*temp = GT;
-				}
-				temp++;
-				*temp = '\0';
-				break;
 			}
-			if (*token)
-			{
-				DEBUG_TOKEN();
-				return (token_type = lcDELIMITER);
-			}			
-			
-		}
-
-		if (strchr("+-*^/%=;(),'", *prog)) { // разделитель
-			*temp = *prog;
-			prog++; // продвижение на следующую позицию
+			break;
+		case '!':
+			if (*(prog + 1) == '=') {
+				prog++;
+				prog++;
+				*temp = NE;
+				temp++;
+				*temp = NE;
+				temp++;
+				*temp = '\0';
+			}
+			break;
+		case '<':
+			if (*(prog + 1) == '=') {
+				prog++;
+				prog++;
+				*temp = LE;
+				temp++;
+				*temp = LE;
+			}
+			else {
+				prog++;
+				*temp = LT;
+			}
 			temp++;
 			*temp = '\0';
+			break;
+		case '>':
+			if (*(prog + 1) == '=') {
+				prog++;
+				prog++;
+				*temp = GE;
+				temp++;
+				*temp = GE;
+			}
+			else {
+				prog++;
+				*temp = GT;
+			}
+			temp++;
+			*temp = '\0';
+			break;
+		}
+		if (*token)
+		{
 			DEBUG_TOKEN();
 			return (token_type = lcDELIMITER);
-		}
+		}			
+			
+	}
 
-		if (*prog == '"') { // строка в кавычках
-			prog++;
-			while (*prog != '"' && *prog != '\r')
-				*temp++ = *prog++;
-			if (*prog == '\r')
-				sntx_err(SYNTAX);
-			prog++;
-			*temp = '\0';
-			DEBUG_TOKEN();
-			return (token_type = lcSTRING);
-		}
-
-		if (isdigit(*prog)) { // число
-			while (!isdelim(*prog))
-				*temp++ = *prog++;
-			*temp = '\0';
-			DEBUG_TOKEN();
-		return (token_type = lcNUMBER);
-		}
-
-		if (isalpha(*prog)) { // переменна¤ или оператор
-			while (!isdelim(*prog))
-				*temp++ = *prog++;
-			token_type = lcTEMP;
-		}
-
+	if (strchr("+-*^/%=;(),'", *prog)) { // разделитель
+		*temp = *prog;
+		prog++; // продвижение на следующую позицию
+		temp++;
 		*temp = '\0';
-
-		//эта строка ¤вл¤етс¤ оператором или переменной?
-		if (token_type == lcTEMP) {
-			tok = look_up(token); // преобразовать во внутренее представление
-			if (tok)
-				token_type = lcKEYWORD; // это зарезервированное слово
-			else
-				token_type = lcIDENTIFIER;
-		}
 		DEBUG_TOKEN();
-		return token_type;
+		return (token_type = lcDELIMITER);
+	}
+
+	if (*prog == '"') { // строка в кавычках
+		prog++;
+		while (*prog != '"' && *prog != '\r')
+			*temp++ = *prog++;
+		if (*prog == '\r')
+			sntx_err(SYNTAX);
+		prog++;
+		*temp = '\0';
+		DEBUG_TOKEN();
+		return (token_type = lcSTRING);
+	}
+
+	if (isdigit(*prog)) { // число
+		while (!isdelim(*prog))
+			*temp++ = *prog++;
+		*temp = '\0';
+		DEBUG_TOKEN();
+	return (token_type = lcNUMBER);
+	}
+
+	if (isalpha(*prog)) { // переменна¤ или оператор
+		while (!isdelim(*prog))
+			*temp++ = *prog++;
+		token_type = lcTEMP;
+	}
+
+	*temp = '\0';
+
+	//эта строка ¤вл¤етс¤ оператором или переменной?
+	if (token_type == lcTEMP) {
+		tok = look_up(token); // преобразовать во внутренее представление
+		if (tok)
+			token_type = lcKEYWORD; // это зарезервированное слово
+		else
+			token_type = lcIDENTIFIER;
+	}
+	DEBUG_TOKEN();
+	return token_type;
 }
 
 //---------------------------------------------------------------------------

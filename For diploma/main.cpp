@@ -17,6 +17,7 @@
 //#include "lexer.h"
 #include "debug.h"
 #include "interpreter.h"
+#include "iniparser.h"
 // ---------------------------------------------------------------------------
 // #define PROG_SIZE       10000
 // #define ID_LEN          31
@@ -66,7 +67,7 @@ int main(int argc, char* argv[])
 		//getch();
 		exit(1);
 	}
-	
+
 	DEBUG_INIT();
 	interpreter_init(argv[1]);
 	call(); // начало интерпритации main()

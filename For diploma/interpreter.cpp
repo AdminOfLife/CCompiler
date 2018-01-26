@@ -7,9 +7,18 @@
 #include "lexer.h"
 #include "parser.h"
 #include "interpreter.h"
+#include "iniparser.h"
 
 
+#define LC_DEF_SETTNIGS(TYPE, NAME, VALUE) { #TYPE, #NAME, VALUE, set_ ## NAME }
+#define LC_DEC_SETTNIGS(TYPE, NAME) TYPE NAME
+#define GET_SETTING(NAME) get_setting(#NAME);
+extern struct define_tab def_tab[];
+typedef void (*callback)(char *value);
 
+/* Internals functions */
+void set_stack_size(char *value);
+void set_static_memory_size(char *value);
 //---------------------------------------------------------------------------
 //интерпритатор
 int gvar_index; //индекс в таблице глобальных переменных main decl_global
@@ -29,8 +38,19 @@ struct var_type {
     union {
 		int value;
 	};
-} global_vars[NUM_GLOBAL_VARS];
+} *global_vars;
 struct var_type local_var_stack[NUM_LOCAL_VARS];
+// Эта структура содержит настройки интерпретатора
+struct littlec_settings{
+	char *type;
+	char *name;
+	char *value;
+	callback fnc;
+}littlec_settings[] = {
+	LC_DEF_SETTNIGS(int, stack_size, "200"),
+	LC_DEF_SETTNIGS(int, static_memory_size, "1024"),
+	"", ""
+};
 
 MODULE_IDENT( "@(#)interpreter.cpp");
 
@@ -42,9 +62,51 @@ MODULE_IDENT( "@(#)interpreter.cpp");
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 
+void read_settings()
+{
+	char *value;
+	ini_open("littlec.ini");
+	for (int i = 0; strcmp("", littlec_settings[i].type); i++)
+	{
+		littlec_settings[i].value = get_value(littlec_settings[i].name, lcNUMBER);
+		littlec_settings[i].fnc(littlec_settings[i].value);
+		printf("settnigs value: %s\n", littlec_settings[i].value);
+	}
+	ini_close();
+}
+void interpreter_setup()
+{
+
+}
+
+void preprocess()
+{
+	auto p = prog;
+	int define_tab_indx = 0;
+	do
+	{
+		get_token();
+		if (*token == '#')
+		{
+			get_token();
+			if (token_type == lcIDENTIFIER)
+			{
+				def_tab[define_tab_indx].name = token;
+				get_token;
+				if (token_type == lcSTRING || token_type == lcNUMBER)
+					def_tab[define_tab_indx].value = token;
+				define_tab_indx++;
+			}
+		}
+	} while (token_type != lcFINISHED);
+	prog = p;
+}
+
 //Инициализация интерпретатора
 int interpreter_init(char* fname)
 {
+	read_settings();
+	interpreter_setup();
     //выделение памяти для программы
     if ((p_buf = (char*)malloc(PROG_SIZE)) == NULL) {
         //Выделить память не удалось
@@ -124,7 +186,10 @@ void prescan(void)
     int brace = 0; // Если brace = 0, то текущая
     // позиция указателя программы находится
     // в не какой-либо функции.
+	FILE *out_file;
+	struct define_tab *def_tab;
     //TODO: DO SOMETHING
+	preprocess();
     p = prog;
     func_index = 0;
     do {
@@ -143,7 +208,11 @@ void prescan(void)
             datatype = tok; // запоминание типа данных
             get_token();
             if (token_type == lcIDENTIFIER) {
-                strcpy(temp, token);
+				if (def_tab = in_deftab(token))
+				{
+					printf("Found define symbol: %s his value is %s\n", def_tab->name, def_tab->value);
+				}
+				strcpy(temp, token);
                 get_token();
                 if (*token != '(') { // это должна быть глобальная переменная
                     prog = tp; // возврат в начало объявления
@@ -623,4 +692,19 @@ void exec_for(void)
 		cond = eval_exp(); // вполнение инкремента
         prog = temp; // возврат в начало цикла
     }
+}
+
+void set_stack_size(char *value)
+{
+	int ivalue;
+	sscanf(value, "%d", &ivalue);
+	global_vars = (var_type*)malloc(sizeof(var_type)*ivalue);
+
+}
+void set_static_memory_size(char *value)
+{
+	int ivalue;
+	sscanf(value, "%d", &ivalue);
+	global_vars = (var_type*)malloc(sizeof(var_type)*ivalue);
+
 }

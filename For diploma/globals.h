@@ -18,6 +18,6 @@ extern char tok; //внутреннее представление лексемы prescan get_token exec_do ex
 // interp_block
 #define cto(a) a
 
-#define TRUE
-#define FALSE
+#define TRUE 1
+#define FALSE 0
 

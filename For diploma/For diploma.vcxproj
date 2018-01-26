@@ -88,6 +88,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="debug.cpp" />
+    <ClCompile Include="iniparser.cpp" />
     <ClCompile Include="interpreter.cpp" />
     <ClCompile Include="lexer.cpp" />
     <ClCompile Include="main.cpp" />
@@ -96,6 +97,7 @@
   <ItemGroup>
     <ClInclude Include="debug.h" />
     <ClInclude Include="globals.h" />
+    <ClInclude Include="iniparser.h" />
     <ClInclude Include="interpreter.h" />
     <ClInclude Include="lexer.h" />
     <ClInclude Include="parser.h" />

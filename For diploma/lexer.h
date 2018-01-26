@@ -38,10 +38,17 @@ enum double_ops { LT = 1,
     NE 
 	};
 //---------------------------------------------------------------------------
+struct define_tab
+{
+	char *name;
+	char *value;
+};
+
 int get_token(void);
 void putback(void);
 int iswhite(char c);
 int isdelim(char c);
 int look_up(char* s);
+struct define_tab *in_deftab(char *token);
 
 #endif // LEXER_H
